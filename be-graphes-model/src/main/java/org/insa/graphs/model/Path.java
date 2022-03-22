@@ -31,41 +31,39 @@ public class Path {
      *         consecutive nodes in the list are not connected in the graph.
      * 
 */
+	
     public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
-    	System.out.println("instanciation");
         List<Arc> arcs = new ArrayList<Arc>();
         if (!nodes.isEmpty()) {
+        	if (nodes.size() == 1) {
+        		return new Path(graph, nodes.get(0));
+        	}
 	    	if (nodes.get(0).hasSuccessors()) {
-	    		//Arc ajout = nodes.get(0).getSuccessors().get(0);
-	    		System.out.println("node size " + nodes.size());
-	        for (int i = 0; i < nodes.size(); ++i) {
-	        	double time_min = 999999.0;
-	        	System.out.println("arcs :" + arcs);
-	        	for (Arc arcz : nodes.get(i).getSuccessors()) {
-	        		System.out.println("arcs :" + arcs);
-	        		System.out.println(nodes.get(i).hasSuccessors());
-	        		System.out.println(arcz.getDestination());
-	        		System.out.println(nodes.get(i+1));
-	        		System.out.println(nodes.get(i).getSuccessors());
-	        		if (time_min > arcz.getMinimumTravelTime()){//nodes.get(i).hasSuccessors() && ((arcz.getDestination().compareTo(nodes.get(i+1))) == 0) && (time_min > arcz.getMinimumTravelTime())) {
-	        			System.out.println("arcazazazzas :" + arcs);
-	        			time_min = arcz.getMinimumTravelTime();
-	        		}
-	        	}
-	        	for (Arc arcz : nodes.get(i).getSuccessors()) {
-	        		if ((time_min == arcz.getMinimumTravelTime())) {
-	        			System.out.println("on essaie d'add");
-	        			arcs.add(arcz);
-	        		}
+	    		Arc arcb = null;
+	    		double time_min = 999999.0;
+		        for (int i = 0; i < nodes.size(); ++i) {
+		        	time_min = 999999.0;
+		        	arcb = null;
+		        	for (Arc arcz : nodes.get(i).getSuccessors()) {
+
+		        		if (((arcz.getDestination().compareTo(nodes.get(i+1))) == 0) && (time_min > arcz.getMinimumTravelTime())) {
+		        			time_min = arcz.getMinimumTravelTime();
+		        			arcb = arcz;
+		        		}
+		        	}
 	        	}
 	        	if (time_min == 999999.0) {
 	        		throw(new IllegalArgumentException());
 	        	}
+	        	else {
+	        		arcs.add(arcb);
+	        	}
 	        }
-	    	}
         }
-        System.out.println("arcs :" + arcs);
+        else {
+        	return new Path(graph);
+        }
         return new Path(graph, arcs);
     }
 
