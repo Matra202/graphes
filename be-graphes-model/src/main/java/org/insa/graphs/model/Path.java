@@ -30,12 +30,42 @@ public class Path {
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
      *         consecutive nodes in the list are not connected in the graph.
      * 
-     * @deprecated Need to be implemented.
-     */
+*/
     public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
+    	System.out.println("instanciation");
         List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
+        if (!nodes.isEmpty()) {
+	    	if (nodes.get(0).hasSuccessors()) {
+	    		//Arc ajout = nodes.get(0).getSuccessors().get(0);
+	    		System.out.println("node size " + nodes.size());
+	        for (int i = 0; i < nodes.size(); ++i) {
+	        	double time_min = 999999.0;
+	        	System.out.println("arcs :" + arcs);
+	        	for (Arc arcz : nodes.get(i).getSuccessors()) {
+	        		System.out.println("arcs :" + arcs);
+	        		System.out.println(nodes.get(i).hasSuccessors());
+	        		System.out.println(arcz.getDestination());
+	        		System.out.println(nodes.get(i+1));
+	        		System.out.println(nodes.get(i).getSuccessors());
+	        		if (time_min > arcz.getMinimumTravelTime()){//nodes.get(i).hasSuccessors() && ((arcz.getDestination().compareTo(nodes.get(i+1))) == 0) && (time_min > arcz.getMinimumTravelTime())) {
+	        			System.out.println("arcazazazzas :" + arcs);
+	        			time_min = arcz.getMinimumTravelTime();
+	        		}
+	        	}
+	        	for (Arc arcz : nodes.get(i).getSuccessors()) {
+	        		if ((time_min == arcz.getMinimumTravelTime())) {
+	        			System.out.println("on essaie d'add");
+	        			arcs.add(arcz);
+	        		}
+	        	}
+	        	if (time_min == 999999.0) {
+	        		throw(new IllegalArgumentException());
+	        	}
+	        }
+	    	}
+        }
+        System.out.println("arcs :" + arcs);
         return new Path(graph, arcs);
     }
 
@@ -198,11 +228,24 @@ public class Path {
      * 
      * @return true if the path is valid, false otherwise.
      * 
-     * @deprecated Need to be implemented.
+     * 
      */
     public boolean isValid() {
-        // TODO:
-        return false;
+    	boolean lastcond = true;
+    	if (isEmpty() || (size() == 1)) {
+    		return true;
+    	}
+    	java.util.List<Arc> Arcs = getArcs();
+    	if (getOrigin() == Arcs.get(0).getOrigin()) {
+    		Node dest_prec =  new Node(Arcs.get(0).getDestination().getId(),Arcs.get(0).getDestination().getPoint());
+    		int i = 1;
+    		while (i < Arcs.size() && lastcond == true) {
+    			lastcond = (Arcs.get(i).getOrigin().compareTo(dest_prec)) == 0;
+    			dest_prec = Arcs.get(i).getDestination();
+    			i++;		
+    		}
+    	}
+        return lastcond;
     }
 
     /**
@@ -210,11 +253,16 @@ public class Path {
      * 
      * @return Total length of the path (in meters).
      * 
-     * @deprecated Need to be implemented.
+     
      */
     public float getLength() {
         // TODO:
-        return 0;
+    	float length = 0;
+    	java.util.List<Arc> Arcs = getArcs();
+    	for (Arc Arcz : Arcs) {
+    		length += Arcz.getLength();
+    	}
+    	return length;
     }
 
     /**
@@ -225,11 +273,10 @@ public class Path {
      * @return Time (in seconds) required to travel this path at the given speed (in
      *         kilometers-per-hour).
      * 
-     * @deprecated Need to be implemented.
+     
      */
     public double getTravelTime(double speed) {
-        // TODO:
-        return 0;
+    	return getLength()/((speed * 1000)/3600);
     }
 
     /**
@@ -238,11 +285,15 @@ public class Path {
      * 
      * @return Minimum travel time to travel this path (in seconds).
      * 
-     * @deprecated Need to be implemented.
-     */
+  */
     public double getMinimumTravelTime() {
         // TODO:
-        return 0;
+    	double time = 0.0;
+    	java.util.List<Arc> Arcs = getArcs();
+    	for (Arc Arcz : Arcs) {
+    		time += Arcz.getTravelTime(Arcz.getRoadInformation().getMaximumSpeed());
+    	}
+        return time;
     }
 
 }

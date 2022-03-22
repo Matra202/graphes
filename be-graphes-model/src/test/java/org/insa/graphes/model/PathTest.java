@@ -208,7 +208,6 @@ public class PathTest {
         for (int i = 0; i < expected.length; ++i) {
             assertEquals(expected[i], path.getArcs().get(i));
         }
-
         // Not so simple construction
         path = Path.createShortestPathFromNodes(graph,
                 Arrays.asList(new Node[] { nodes[0], nodes[1], nodes[2], nodes[3] }));
