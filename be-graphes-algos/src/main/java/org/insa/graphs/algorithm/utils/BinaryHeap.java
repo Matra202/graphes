@@ -74,9 +74,8 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     private void percolateUp(int index) {
         E x = this.array.get(index);
 
-        for (; index > 0
-                && x.compareTo(this.array.get(indexParent(index))) < 0; index = indexParent(
-                        index)) {
+        for (; index > 0 && 
+        		x.compareTo(this.array.get(indexParent(index))) < 0; index = indexParent(index)) {
             E moving_val = this.array.get(indexParent(index));
             this.arraySet(index, moving_val);
         }
@@ -136,9 +135,117 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     }
 
     @Override
+    public int search(E x, int index){
+    	if (index >= this.currentSize || this.array.get(index).compareTo(x) > 0 ) {
+    		return -1;
+    	}
+    	else if (this.array.get(index).compareTo(x) == 0 ) {
+    		return index;
+    	}
+    	int index_aux = search(x,indexLeft(index));
+    	if (index_aux == -1) {
+    		index_aux = search(x,indexLeft(index)+1);
+    	}
+    	return index_aux;
+    }
+    
+    @Override
+    public void remove(E x) throws ElementNotFoundException {
+    	if (this.isEmpty()) {
+    		throw new ElementNotFoundException(x);
+    	}
+    	int index = search(x,0);
+    	if (index == -1) {
+    		throw new ElementNotFoundException(x);
+    	}
+    	else {
+    		E aux = this.array.get(this.currentSize-1);
+			this.arraySet(this.currentSize-1 , x);
+			this.arraySet(index, aux);
+			this.currentSize--;
+			//if (x.compareTo(aux)!=0) {
+			this.percolateDown(index);
+    		this.percolateUp(index);
+			//}
+    	}
+    }
+    
+    /*
     public void remove(E x) throws ElementNotFoundException {
         // TODO:
+    	if (this.isEmpty()) {
+            throw new ElementNotFoundException(x);}
+    	if (this.findMin().compareTo(x) > 0 ) {
+    		throw new ElementNotFoundException(x);
+    	}
+    	else if(this.findMin().compareTo(x) == 0 ){
+    		this.deleteMin();
+    	}
+    	else {
+    		int ileft = indexLeft(0);
+            int iright = ileft + 1;
+            boolean notfound = true;
+            while(notfound) {
+	            if(this.size()==ileft) {
+	            	if (this.array.get(ileft).compareTo(x) == 0 ) {
+	            		--this.currentSize;//opération de suppression du dernier élément du tableau
+	            	}
+	            	else {
+	            		throw new ElementNotFoundException(x);
+	            	}
+	            }
+	            else if (this.size()<ileft) {
+	            	throw new ElementNotFoundException(x);
+	            }
+	            else {
+	            	if (this.array.get(ileft).compareTo(x) > 0  && this.array.get(iright).compareTo(x) > 0 ) {
+	            		throw new ElementNotFoundException(x);
+	            	}
+	            	else if (this.array.get(ileft).compareTo(x) < 0  && this.array.get(iright).compareTo(x) > 0) {
+	            		ileft=this.indexLeft(ileft);
+	            		iright=ileft+1;
+	            	}
+	            	else if (this.array.get(ileft).compareTo(x) > 0  && this.array.get(iright).compareTo(x) < 0) {
+	            		ileft=this.indexLeft(iright);
+	            		iright=ileft+1;
+	            	}
+	            	else if (this.array.get(ileft).compareTo(x) < 0  && this.array.get(iright).compareTo(x) < 0) {
+	            		if (this.array.get(ileft).compareTo(this.array.get(iright))<0) {
+	            			ileft=this.indexLeft(iright);
+		            		iright=ileft+1;
+	            		}
+	            		else {
+	            			ileft=this.indexLeft(ileft);
+		            		iright=ileft+1;
+	            		}
+	            	}
+	            	else if (this.array.get(ileft).compareTo(x) == 0) {
+	            		E aux = this.array.get(this.currentSize -1);
+        				this.arraySet(this.currentSize -1 , x);
+        				this.arraySet(ileft, aux);
+        				this.currentSize--;
+        				notfound=false;
+        				if (x.compareTo(aux)!=0) {
+	        				this.percolateDown(ileft);
+	            			this.percolateUp(ileft);
+        				}
+	            	}
+	            	else if (this.array.get(iright).compareTo(x) == 0) {
+	            		E aux = this.array.get(this.currentSize -1);
+        				this.arraySet(this.currentSize -1 , x);
+        				this.arraySet(ileft, aux);
+        				this.currentSize--;
+        				notfound=false;
+        				if (x.compareTo(aux)!=0) {
+	        				this.percolateDown(ileft);
+	            			this.percolateUp(ileft);
+        				}
+	            	}
+	            }
+            }
+    	}
     }
+    */
 
     @Override
     public E findMin() throws EmptyPriorityQueueException {

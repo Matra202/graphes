@@ -52,6 +52,8 @@ public interface PriorityQueue<E extends Comparable<E>> {
      */
     public void remove(E x) throws ElementNotFoundException;
 
+    public int search(E x,int index);
+    
     /**
      * Retrieve (but not remove) the smallest item in the queue.
      * 
