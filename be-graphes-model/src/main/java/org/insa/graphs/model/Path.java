@@ -42,23 +42,23 @@ public class Path {
 	    	if (nodes.get(0).hasSuccessors()) {
 	    		Arc arcb = null;
 	    		double time_min = 999999.0;
-		        for (int i = 0; i < nodes.size(); ++i) {
+		        for (int i = 0; i < nodes.size()-1; ++i) {
 		        	time_min = 999999.0;
 		        	arcb = null;
 		        	for (Arc arcz : nodes.get(i).getSuccessors()) {
-
 		        		if (((arcz.getDestination().compareTo(nodes.get(i+1))) == 0) && (time_min > arcz.getMinimumTravelTime())) {
 		        			time_min = arcz.getMinimumTravelTime();
 		        			arcb = arcz;
 		        		}
 		        	}
-	        	}
+	        	
 	        	if (time_min == 999999.0) {
 	        		throw(new IllegalArgumentException());
 	        	}
 	        	else {
 	        		arcs.add(arcb);
 	        	}
+		        }
 	        }
         }
         else {
@@ -84,7 +84,35 @@ public class Path {
     public static Path createShortestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
+        if (!nodes.isEmpty()) {
+        	if (nodes.size() == 1) {
+        		return new Path(graph, nodes.get(0));
+        	}
+	    	if (nodes.get(0).hasSuccessors()) {
+	    		Arc arcb = null;
+	    		float length_min = 999999;
+		        for (int i = 0; i < nodes.size()-1; ++i) {
+		        	length_min = 999999;
+		        	arcb = null;
+		        	for (Arc arcz : nodes.get(i).getSuccessors()) {
+		        		if (((arcz.getDestination().compareTo(nodes.get(i+1))) == 0) && (length_min > arcz.getLength())) {
+		        			length_min = arcz.getLength();
+		        			arcb = arcz;
+		        		}
+		        	}
+	        	
+	        	if (length_min == 999999.0) {
+	        		throw(new IllegalArgumentException());
+	        	}
+	        	else {
+	        		arcs.add(arcb);
+	        	}
+		        }
+	        }
+        }
+        else {
+        	return new Path(graph);
+        }
         return new Path(graph, arcs);
     }
 
