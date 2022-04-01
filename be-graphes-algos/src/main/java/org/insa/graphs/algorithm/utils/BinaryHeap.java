@@ -160,7 +160,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     	}
     	else {
     		E aux = this.array.get(this.currentSize-1);
-			this.arraySet(this.currentSize-1 , x);
+			this.arraySet(this.currentSize-1, x);
 			this.arraySet(index, aux);
 			this.currentSize--;
 			//if (x.compareTo(aux)!=0) {
