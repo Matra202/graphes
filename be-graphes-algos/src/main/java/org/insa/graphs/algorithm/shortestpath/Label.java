@@ -1,19 +1,17 @@
 package org.insa.graphs.algorithm.shortestpath;
 import  org.insa.graphs.model.Arc;
 
-public class Label {
+public class Label implements Comparable<Label> {
 	private int sommet_courant;
 	private boolean marque;
 	private double cout;
 	private Arc pere;
-	private int serial;
 	
-	public Label(int sommet_courant, boolean marque, double cout, Arc pere,int s) {
+	public Label(int sommet_courant, boolean marque, double cout, Arc pere) {
 		this.sommet_courant=sommet_courant;
 		this.marque=marque;
 		this.cout=cout;
 		this.pere=pere;
-		this.serial=s;
 	}
 	public double getCost() {
 		return this.cout;
@@ -30,8 +28,24 @@ public class Label {
 		return this.pere;
 	}
 	
-	public int getSerial() {
-		return this.serial;
+	
+	public void setPadre(Arc p) {
+		this.pere=p;
 	}
 	
+	public void setMarque(boolean m) {
+		this.marque=m;
+	}
+	
+	public void setCout(double c) {
+		this.cout=c;
+	}
+	
+	public double getTotalCost() {
+		return getCost();
+	}
+	@Override
+    public int compareTo(Label other) {
+        return Double.compare(getTotalCost(), other.getTotalCost());
+    }
 }
