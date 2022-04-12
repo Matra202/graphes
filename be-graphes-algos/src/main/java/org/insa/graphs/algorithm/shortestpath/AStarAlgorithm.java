@@ -18,9 +18,15 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
         // Initialize array of distances.
         Node finalNode=data.getDestination();
     	LabelStar[]labels = new LabelStar[nbNodes];
-        double heuristiq;
+        double heuristiq=Double.MAX_VALUE;
         for (int i =0;i<nbNodes;i++) {
-        	heuristiq=nodes.get(i).getPoint().distanceTo(finalNode.getPoint());
+        	switch (data.getMode()) {
+        	case TIME:
+        		heuristiq=nodes.get(i).getPoint().distanceTo(finalNode.getPoint())/((double) graph.getGraphInformation().getMaximumSpeed()/3.6);
+        	case LENGTH:
+        		heuristiq=nodes.get(i).getPoint().distanceTo(finalNode.getPoint());
+        	}
+        	
         	labels[i] = new LabelStar(i, false, Double.POSITIVE_INFINITY, null,heuristiq);
         }
         return labels;

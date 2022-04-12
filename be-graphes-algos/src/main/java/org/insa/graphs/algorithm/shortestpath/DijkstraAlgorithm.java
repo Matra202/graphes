@@ -57,7 +57,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                 	 notifyNodeReached(arc.getDestination());
                 	 //calcul du min
                 	 double mincost = Double.min(labels[arc.getDestination().getId()].getCost(),
-                			 					minlab.getCost() + arc.getLength());
+  			 					minlab.getCost() + data.getCost(arc));
+                	 
                 	 boolean changed = mincost < labels[arc.getDestination().getId()].getCost();//compareto
                 	 
                 	 if (changed) {
