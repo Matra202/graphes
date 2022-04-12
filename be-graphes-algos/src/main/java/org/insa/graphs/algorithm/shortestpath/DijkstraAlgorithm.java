@@ -7,6 +7,7 @@ import org.insa.graphs.model.Graph;
 import org.insa.graphs.model.Node;
 import org.insa.graphs.model.Path;
 import org.insa.graphs.algorithm.utils.BinaryHeap;
+import org.insa.graphs.algorithm.utils.ElementNotFoundException;
 
 public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
@@ -14,53 +15,62 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         super(data);
     }
 
+    protected Label[] create_label_list(ShortestPathData data) {
+    	int nbNodes= data.getGraph().size();
+    	Label[]labels = new Label[nbNodes]; 
+        for (int i =0;i<nbNodes;i++) {
+        	labels[i] = new Label(i, false, Double.POSITIVE_INFINITY, null);
+        }
+        return labels;
+    }
+    
     @Override
     protected ShortestPathSolution doRun() {
         final ShortestPathData data = getInputData();
         Graph graph = data.getGraph();
         ShortestPathSolution solution = null;
         // TODO:
-        final int nbNodes = graph.size();
         List<Node> nodes= graph.getNodes();
         // Initialize array of distances.
         Node finalNode=data.getDestination();
-        Label[]labels = new Label[nbNodes];
-        
-        for (int i =0;i<nbNodes;i++) {
-        	labels[i] = new Label(i, false, Double.POSITIVE_INFINITY, null);
-        }
+        Label[]labels = create_label_list(data);
         BinaryHeap<Label> Tas = new BinaryHeap<>();
         labels[data.getOrigin().getId()].setCout(0);
         Tas.insert(labels[data.getOrigin().getId()]);
         // Actual algorithm, we will assume the graph does not contain negative
         // cycle...
-        //int compteur_sommet_marques = 0;
         boolean noussommesarrives = false;
         while (!Tas.isEmpty()) {
         	Label minlab = Tas.deleteMin();
         	minlab.setMarque(true);
-        	notifyNodeReached(nodes.get(minlab.getSommet()));
-        	noussommesarrives=nodes.get(minlab.getSommet())==finalNode;
-        	//compteur_sommet_marques++;
+        	notifyNodeMarked(nodes.get(minlab.getSommet()));
+        	noussommesarrives=nodes.get(minlab.getSommet())==finalNode;//compareto
         	if (noussommesarrives) {
         		break;
         	}
             for (Arc arc: nodes.get(minlab.getSommet()).getSuccessors()) {
             // Small test to check allowed roads...
-                 if (!data.isAllowed(arc)) {
-                     continue;
-                 }
+            	if (!data.isAllowed(arc)) {
+            		continue;
+            	}
                  if (!(labels[arc.getDestination().getId()].getMarque())) {
+                	 notifyNodeReached(arc.getDestination());
                 	 //calcul du min
                 	 double mincost = Double.min(labels[arc.getDestination().getId()].getCost(),
-                			 minlab.getCost() + arc.getLength());
-                	 boolean changed = mincost != labels[arc.getDestination().getId()].getCost();
+                			 					minlab.getCost() + arc.getLength());
+                	 boolean changed = mincost < labels[arc.getDestination().getId()].getCost();//compareto
                 	 
                 	 if (changed) {
-                		 labels[arc.getDestination().getId()].setCout(mincost);
-                		 if (Tas.search(labels[arc.getDestination().getId()],0)!=-1){
-                			 Tas.remove(labels[arc.getDestination().getId()]); 
+                		 
+                		 if (!Double.isInfinite(labels[arc.getDestination().getId()].getCost())){
+                			 try {
+                				 Tas.remove(labels[arc.getDestination().getId()]);  
+                			 }
+                			 catch (ElementNotFoundException error){
+                				 System.out.println("error");
+                			 }
                 		 }
+                		 labels[arc.getDestination().getId()].setCout(mincost);
                 		 labels[arc.getDestination().getId()].setPadre(arc);
                 		 Tas.insert(labels[arc.getDestination().getId()]);
                 	 }
