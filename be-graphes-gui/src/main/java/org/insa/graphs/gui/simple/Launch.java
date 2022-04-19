@@ -1,6 +1,7 @@
 package org.insa.graphs.gui.simple;
 
 import java.awt.BorderLayout;
+import org.insa.graphs.algorithm.*;
 import java.awt.Dimension;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -18,8 +19,9 @@ import org.insa.graphs.model.Path;
 import org.insa.graphs.model.io.BinaryGraphReader;
 import org.insa.graphs.model.io.GraphReader;
 import org.insa.graphs.model.io.PathReader;
+import java.lang.Double.*;
 
-package org.insa.graphs.algorithm.shortestpath;
+import org.insa.graphs.algorithm.shortestpath.*;
 public class Launch {
 
     /**
@@ -49,8 +51,9 @@ public class Launch {
     public static void main(String[] args) throws Exception {
 
         // Visit these directory to see the list of available files on Commetud.
-        final String mapName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr";
-        final String pathName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Paths/path_fr31insa_rangueil_r2.path";
+    	// il suffit de changer les maps pour avoir des tests sur des maps différentes 
+        final String mapName = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr";
+        final String pathName = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Paths/path_fr31insa_rangueil_r2.path";
 
         // Create a graph reader.
         final GraphReader reader = new BinaryGraphReader(
@@ -59,22 +62,64 @@ public class Launch {
         // TODO: Read the graph.
         final Graph graph = reader.read();
         
-        ShortestPathData SPD = new ShortestPathData(graph, graph.get(0), graph.get(10), ArcInspectorFactory.getAllFilters.get(1));
+        
+        //on peut choisir les nodes ainsi que les Arcinspector etc pour le mode de trajet 
+        ShortestPathData SPD = new ShortestPathData(graph, graph.get(283), graph.get(127), ArcInspectorFactory.getAllFilters().get(4));
         
         BellmanFordAlgorithm bellman= new BellmanFordAlgorithm(SPD);
         
-        BellmanFordAlgorithm result_b = new ShortestPathSolution(bellman.doRun());
+        ShortestPathSolution result_b = bellman.run();
         
         DijkstraAlgorithm dijkstra= new DijkstraAlgorithm(SPD);
         
-        ShortestPathSolution result_d = new ShortestPathSolution(dijkstra.doRun());
+        ShortestPathSolution result_d = dijkstra.run();
         
-        if (result_b.compareTo(result_d)==1) {
-        	//c good 
+        AStarAlgorithm astarf = new AStarAlgorithm(SPD);
+        
+        ShortestPathSolution result_a = astarf.run();
+        
+        if ((result_b.isFeasible() && result_d.isFeasible()) || (!result_b.isFeasible() && !result_d.isFeasible())) {
+        	System.out.println("La faisibilité est bonne ! (deux infaisables ou deux faisables)");
+        	if (result_b.isFeasible() && result_d.isFeasible()) {
+	        	if (result_b.getPath().getMinimumTravelTime()==(result_d.getPath().getMinimumTravelTime())) {
+	            	//c good 
+	        		System.out.println(result_d);
+	        		System.out.println(result_d.getPath().getMinimumTravelTime());
+	            	System.out.println("Tout est bon ! ");
+	            }
+	            else {
+	            	System.out.println("Mince alors ça ne fonctionne pas alors que la faisbilité était la bonne (erreur de notre programme)");
+	            }
+        	}
+        	else  {
+        		System.out.println("Car les 2 ne sont pas faisables");
+        	}
         }
         else {
-        	throw (Exception e);
+        	System.out.println("Flûte ! Les programmes ne sont pas d'accord sur la faisibilité");
         }
+        
+        if ((result_b.isFeasible() && result_a.isFeasible()) || (!result_b.isFeasible() && !result_a.isFeasible())) {
+        	System.out.println("La faisibilité est bonne désormais");
+        	if (result_b.isFeasible() && result_a.isFeasible()) {
+	        	if (result_b.getPath().getMinimumTravelTime()==(result_a.getPath().getMinimumTravelTime())) {
+	            	//c good 
+	        		System.out.println(result_a);
+	        		System.out.println(result_a.getPath().getMinimumTravelTime());
+	            	System.out.println("Tout est bon ! ");
+	            }
+	            else {
+	            	System.out.println("Mince alors ça ne fonctionne pas alors que la faisbilité était la bonne (erreur de notre programme)");
+	            }
+        	}
+        	else  {
+        		System.out.println("Car les 2 ne sont pas faisables");
+        	}
+        }
+        else {
+        	System.out.println("Flûte ! Les programmes ne sont pas d'accord sur la faisibilité");
+        }
+        
         // Create the drawing:
         //final Drawing drawing = createDrawing();
 
