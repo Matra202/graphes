@@ -9,14 +9,17 @@ import java.io.FileInputStream;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.insa.graphs.algorithm.ArcInspector;
 import org.insa.graphs.gui.drawing.Drawing;
 import org.insa.graphs.gui.drawing.components.BasicDrawing;
 import org.insa.graphs.model.Graph;
+import org.insa.graphs.model.Node;
 import org.insa.graphs.model.Path;
 import org.insa.graphs.model.io.BinaryGraphReader;
 import org.insa.graphs.model.io.GraphReader;
 import org.insa.graphs.model.io.PathReader;
 
+package org.insa.graphs.algorithm.shortestpath;
 public class Launch {
 
     /**
@@ -54,18 +57,35 @@ public class Launch {
                 new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
 
         // TODO: Read the graph.
-        final Graph graph = null;
-
+        final Graph graph = reader.read();
+        
+        ShortestPathData SPD = new ShortestPathData(graph, graph.get(0), graph.get(10), ArcInspectorFactory.getAllFilters.get(1));
+        
+        BellmanFordAlgorithm bellman= new BellmanFordAlgorithm(SPD);
+        
+        BellmanFordAlgorithm result_b = new ShortestPathSolution(bellman.doRun());
+        
+        DijkstraAlgorithm dijkstra= new DijkstraAlgorithm(SPD);
+        
+        ShortestPathSolution result_d = new ShortestPathSolution(dijkstra.doRun());
+        
+        if (result_b.compareTo(result_d)==1) {
+        	//c good 
+        }
+        else {
+        	throw (Exception e);
+        }
         // Create the drawing:
-        final Drawing drawing = createDrawing();
+        //final Drawing drawing = createDrawing();
 
         // TODO: Draw the graph on the drawing.
+        //drawing.drawGraph(graph);
 
         // TODO: Create a PathReader.
-        final PathReader pathReader = null;
+        //final PathReader pathReader = new BinaryPathReader(new DataInputStream(new BufferedInputStream(new FileInputStream(pathName))));
 
         // TODO: Read the path.
-        final Path path = null;
+        //final Path path = pathReader.readPath(graph);
 
         // TODO: Draw the path.
     }
